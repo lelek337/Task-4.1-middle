@@ -15,31 +15,25 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface EventConfigMapper {
 
-    // Request DTO to MongoDB Entity
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     EventConfigMongo toMongoEntity(EventConfigRequestDto requestDto);
 
-    // Request DTO to Elasticsearch Entity
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     EventConfigElastic toElasticEntity(EventConfigRequestDto requestDto);
 
-    // MongoDB Entity to Response DTO
     EventConfigResponseDto toResponseDto(EventConfigMongo entity);
 
-    // Elasticsearch Entity to Response DTO
     EventConfigResponseDto toResponseDto(EventConfigElastic entity);
 
-    // Update MongoDB Entity from Request DTO
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     void updateMongoEntity(@MappingTarget EventConfigMongo entity, EventConfigRequestDto requestDto);
 
-    // Update Elasticsearch Entity from Request DTO
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

@@ -12,7 +12,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -35,7 +37,7 @@ public class MongoEventConfigService implements EventConfigStorageStrategy {
     }
 
     @Override
-    public EventConfigResponseDto update(String id, EventConfigRequestDto requestDto) {
+    public EventConfigResponseDto updateEventConfig(String id, EventConfigRequestDto requestDto) {
         EventConfigMongo existing = repository.findById(id)
                 .orElseThrow(() -> new EventConfigNotFoundException("Event config not found with id: " + id));
 
@@ -46,6 +48,38 @@ public class MongoEventConfigService implements EventConfigStorageStrategy {
 
         EventConfigMongo updated = repository.save(existing);
         return mapper.toResponseDto(updated);
+    }
+
+    @Override
+    public List<EventConfigResponseDto> getEventConfigs(String eventType, String source, Boolean enabled) {
+        List<EventConfigMongo> entities = findWithFilters(eventType, source, enabled);
+        return entities.stream()
+                .map(mapper::toResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    private List<EventConfigMongo> findWithFilters(String eventType, String source, Boolean enabled) {
+        if (eventType != null && source != null && enabled != null) {
+            return repository.findByEventTypeAndSourceAndEnabled(eventType, source, enabled);
+        }
+
+        if (eventType != null && source != null) {
+            return repository.findByEventTypeAndSource(eventType, source);
+        }if (eventType != null && enabled != null) {
+            return repository.findByEventTypeAndEnabled(eventType, enabled);
+        }if (enabled != null && source != null) {
+            return repository.findBySourceAndEnabled(source, enabled);
+        }
+
+        if (eventType != null) {
+            return repository.findByEventType(eventType);
+        }if (enabled != null) {
+            return repository.findByEnabled(enabled);
+        }if (source != null) {
+            return repository.findBySource(source);
+        }
+
+        return repository.findAll();
     }
 
     @Override
