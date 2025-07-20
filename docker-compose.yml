@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # MongoDB
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+
+  # Elasticsearch
+  elasticsearch:
+    image: bitnami/elasticsearch:7.17.10
+    container_name: elasticsearch
+    environment:
+      - ELASTICSEARCH_CLUSTER_NAME=elasticsearch
+      - ELASTICSEARCH_NODE_NAME=elasticsearch
+      - ELASTICSEARCH_IS_DEDICATED_NODE=no
+      - ELASTICSEARCH_NODE_TYPE=ingest
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - eventconfig-network
+
+volumes:
+  mongodb_data:
+    driver: local
+  elasticsearch_data:
+    driver: local
+
+networks:
+  eventconfig-network:
+    driver: bridge
