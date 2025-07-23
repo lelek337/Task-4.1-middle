@@ -11,9 +11,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -87,6 +92,27 @@ class ControllerEventConfigImplTest {
         assertThat(body.getUpdatedAt()).isEqualTo(fixedTime);
 
         verify(serviceEventConfig, times(1)).createEventConfig(requestDto);
+        verifyNoMoreInteractions(serviceEventConfig);
+    }
+
+    @Test
+    @DisplayName("Should handle validation errors")
+    void createEventConfig_InvalidData_ThrowsValidationException() {
+        // Given
+        EventConfigRequestDto invalidDto = EventConfigRequestDto.builder()
+                .eventType("")
+                .source(null)
+                .build();
+
+        when(serviceEventConfig.createEventConfig(invalidDto))
+                .thenThrow(new IllegalArgumentException("Invalid request data"));
+
+        // When & Then
+        assertThatThrownBy(() -> controller.createEventConfig(invalidDto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Invalid request data");
+
+        verify(serviceEventConfig, times(1)).createEventConfig(invalidDto);
         verifyNoMoreInteractions(serviceEventConfig);
     }
 

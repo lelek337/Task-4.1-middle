@@ -28,7 +28,6 @@ public class MongoEventConfigService implements EventConfigStorageStrategy {
     @Override
     public EventConfigResponseDto createEventConfig(EventConfigRequestDto requestDto) {
         EventConfigMongo entity = mapper.toMongoEntity(requestDto);
-        entity.setId(UUID.randomUUID().toString());
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
 

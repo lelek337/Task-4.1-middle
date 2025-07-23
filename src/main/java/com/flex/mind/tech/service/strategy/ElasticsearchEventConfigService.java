@@ -28,7 +28,6 @@ public class ElasticsearchEventConfigService implements EventConfigStorageStrate
     @Override
     public EventConfigResponseDto createEventConfig(EventConfigRequestDto requestDto) {
         EventConfigElastic entity = mapper.toElasticEntity(requestDto);
-        entity.setId(UUID.randomUUID().toString());
         entity.setCreatedAt(LocalDateTime.now());
         entity.setUpdatedAt(LocalDateTime.now());
 
