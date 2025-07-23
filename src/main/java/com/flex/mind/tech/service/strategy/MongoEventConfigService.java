@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-@ConditionalOnProperty(name = "app.storage.type", havingValue = "mongodb")
+@ConditionalOnProperty(name = "app.storage.type", havingValue = "mongodb", matchIfMissing = true)
 public class MongoEventConfigService implements EventConfigStorageStrategy {
 
     private final EventConfigMongoRepository repository;
